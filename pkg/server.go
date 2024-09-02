@@ -3,7 +3,6 @@ package pkg
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"net"
 	"strings"
 	"sync"
@@ -19,14 +18,10 @@ type Server struct {
 func (s *Server) NewClient(conn net.Conn) {
 	defer conn.Close()
 
-	fmt.Println(len(s.Members))
-
 	if len(s.Members) >= maxConnections {
 		conn.Write([]byte("Chat is full, try again later\n"))
 		return
 	}
-
-	log.Printf("new client has connected: %s", conn.RemoteAddr().String())
 
 	c := &Client{
 		Conn:     conn,
