@@ -1,3 +1,3 @@
-module github.com/Shasor/net-cat
+module net-cat
 
 go 1.23.0
