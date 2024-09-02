@@ -34,7 +34,7 @@ func main() {
 		log.Fatalf("unable to start server: %s", err.Error())
 	}
 	defer listener.Close()
-	log.Printf("started server on :" + port)
+	fmt.Printf("Listening on the port " + ":" + port)
 
 	for {
 		conn, err := listener.Accept()
