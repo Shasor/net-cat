@@ -27,7 +27,7 @@ func (c *Client) readInput() {
 			return
 		}
 
-		input = strings.Trim(input, "\r\n")
+		input = strings.TrimSpace(input)
 
 		if input != "" {
 			c.Msgs <- Msg{

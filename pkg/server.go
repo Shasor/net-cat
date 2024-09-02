@@ -34,7 +34,7 @@ func (s *Server) NewClient(conn net.Conn) {
 	c.Conn.Write([]byte(welcomeMsg))
 
 	username, _ := bufio.NewReader(c.Conn).ReadString('\n')
-	username = strings.Trim(username, "\r\n")
+	username = strings.TrimSpace(username)
 	c.Username = username
 
 	if username != "anonymous" && username != "" {
