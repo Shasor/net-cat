@@ -42,9 +42,9 @@ func (s *Server) NewClient(conn net.Conn) {
 
 func (s *Server) HandleClient(c *Client) {
 	c.Conn.Write([]byte("[ENTER YOUR NAME]: "))
-	username, _ := bufio.NewReader(c.Conn).ReadString('\n')
-	username = strings.TrimSpace(username)
-	c.Username = username
+	name, _ := bufio.NewReader(c.Conn).ReadString('\n')
+	name = strings.TrimSpace(name)
+	c.Username = name
 
 	if c.Username != "" {
 		s.Members[c.Conn.RemoteAddr()] = c
@@ -59,7 +59,7 @@ func (s *Server) HandleClient(c *Client) {
 
 		s.broadcast(c, fmt.Sprintf("%s has left our chat...", c.Username))
 	} else {
-		c.Conn.Write([]byte("enter a valid username!\n"))
+		c.Conn.Write([]byte("enter a valid name!\n"))
 		go s.HandleClient(c)
 	}
 }
