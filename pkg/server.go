@@ -31,11 +31,22 @@ func (s *Server) NewClient(conn net.Conn) {
 
 	c.Conn.Write([]byte(welcomeMsg))
 
+	s.HandleClient(c)
+
+	delete(s.Members, c.Conn.RemoteAddr())
+
+	s.Mu.Lock()
+	close(c.Msgs)
+	s.Mu.Unlock()
+}
+
+func (s *Server) HandleClient(c *Client) {
+	c.Conn.Write([]byte("[ENTER YOUR NAME]: "))
 	username, _ := bufio.NewReader(c.Conn).ReadString('\n')
 	username = strings.TrimSpace(username)
 	c.Username = username
 
-	if username != "" {
+	if c.Username != "" {
 		s.Members[c.Conn.RemoteAddr()] = c
 
 		if history != "" {
@@ -48,15 +59,9 @@ func (s *Server) NewClient(conn net.Conn) {
 
 		s.broadcast(c, fmt.Sprintf("%s has left our chat...", c.Username))
 	} else {
-		c.Conn.Write([]byte("entrez un pseudo valide\n"))
-		return
+		c.Conn.Write([]byte("enter a valid username!\n"))
+		go s.HandleClient(c)
 	}
-
-	delete(s.Members, c.Conn.RemoteAddr())
-
-	s.Mu.Lock()
-	close(c.Msgs)
-	s.Mu.Unlock()
 }
 
 func (s *Server) Run() {
