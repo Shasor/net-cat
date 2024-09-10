@@ -1,5 +1,9 @@
+all: build run
+
 build:
-	go build -o TCPChat ./cmd/main.go
+	@echo "Build in progress..."
+	@go build -o TCPChat ./cmd/main.go
 
 run:
-	go run ./cmd/main.go
+	@echo "Run:"
+	@go run ./cmd/main.go
