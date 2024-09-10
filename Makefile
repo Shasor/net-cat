@@ -6,4 +6,4 @@ build:
 
 run:
 	@echo "Run:"
-	@go run ./cmd/main.go
+	@./TCPChat

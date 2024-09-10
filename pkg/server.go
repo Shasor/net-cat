@@ -25,11 +25,9 @@ func (s *Server) NewClient(conn net.Conn) {
 
 	c := &Client{
 		Conn:     conn,
-		Username: "anonymous",
+		Username: "",
 		Msgs:     s.Msgs,
 	}
-
-	s.Members[c.Conn.RemoteAddr()] = c
 
 	c.Conn.Write([]byte(welcomeMsg))
 
@@ -37,7 +35,9 @@ func (s *Server) NewClient(conn net.Conn) {
 	username = strings.TrimSpace(username)
 	c.Username = username
 
-	if username != "anonymous" && username != "" {
+	if username != "" {
+		s.Members[c.Conn.RemoteAddr()] = c
+
 		if history != "" {
 			c.Conn.Write([]byte(history))
 		}
@@ -49,7 +49,6 @@ func (s *Server) NewClient(conn net.Conn) {
 		s.broadcast(c, fmt.Sprintf("%s has left our chat...", c.Username))
 	} else {
 		c.Conn.Write([]byte("entrez un pseudo valide\n"))
-		delete(s.Members, c.Conn.RemoteAddr())
 		return
 	}
 
@@ -76,7 +75,7 @@ func (s *Server) msg(c *Client, msg string) {
 
 func (s *Server) broadcast(sender *Client, msg string) {
 	for addr, m := range s.Members {
-		if addr != sender.Conn.RemoteAddr() && m.Username != "anonymous" {
+		if addr != sender.Conn.RemoteAddr() {
 			m.msg(msg)
 		}
 	}
