@@ -5,10 +5,8 @@ import (
 	"os"
 )
 
-func CreateFile() *os.File {
-	file, err := os.Create("log.txt")
-	ErrorsHandler(err, false)
-	return file
+func CreateFile() {
+	file, _ = os.Create("log.txt")
 }
 
 func (c *Client) WriteHistory() {
@@ -20,4 +18,9 @@ func (c *Client) WriteHistory() {
 	for scanner.Scan() {
 		c.Conn.Write([]byte(scanner.Text() + "\n"))
 	}
+}
+
+func (c *Client) SaveHistory(msg string) {
+	_, err := file.Write([]byte(msg + "\n"))
+	ErrorsHandler(err, false)
 }

@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"net"
+	"net-cat/pkg"
 	"os"
-	"pkg"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 		return
 	}
 
-	file := pkg.CreateFile()
+	pkg.CreateFile()
 
 	port := pkg.DefaultPort
 	if len(os.Args) == 2 {
@@ -21,7 +21,7 @@ func main() {
 	}
 
 	s := pkg.NewServer()
-	go s.Run(file)
+	go s.Run()
 
 	listener, err := net.Listen("tcp", ":"+port)
 	pkg.ErrorsHandler(err, true)
@@ -31,6 +31,6 @@ func main() {
 	for {
 		conn, err := listener.Accept()
 		pkg.ErrorsHandler(err, false)
-		go s.NewClient(conn, file)
+		go s.NewClient(conn)
 	}
 }

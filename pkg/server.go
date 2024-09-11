@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"net"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -23,7 +22,7 @@ func NewServer() *Server {
 	}
 }
 
-func (s *Server) NewClient(conn net.Conn, file *os.File) {
+func (s *Server) NewClient(conn net.Conn) {
 	defer conn.Close()
 
 	if len(s.Members) >= maxConnections {
@@ -39,7 +38,7 @@ func (s *Server) NewClient(conn net.Conn, file *os.File) {
 
 	c.Conn.Write([]byte(welcomeMsg))
 
-	s.HandleClient(c, file)
+	s.HandleClient(c)
 
 	delete(s.Members, c.Conn.RemoteAddr())
 
@@ -48,7 +47,7 @@ func (s *Server) NewClient(conn net.Conn, file *os.File) {
 	s.Mu.Unlock()
 }
 
-func (s *Server) HandleClient(c *Client, file *os.File) {
+func (s *Server) HandleClient(c *Client) {
 	c.Conn.Write([]byte("[ENTER YOUR NAME]: "))
 	name, _ := bufio.NewReader(c.Conn).ReadString('\n')
 	name = strings.TrimSpace(name)
@@ -66,23 +65,22 @@ func (s *Server) HandleClient(c *Client, file *os.File) {
 		s.broadcast(c, fmt.Sprintf("%s has left our chat...", c.Username))
 	} else {
 		c.Conn.Write([]byte("enter a valid name!\n"))
-		go s.HandleClient(c, file)
+		go s.HandleClient(c)
 	}
 }
 
-func (s *Server) Run(file *os.File) {
+func (s *Server) Run() {
 	s.Mu.Lock()
 	defer s.Mu.Unlock()
 	for msg := range s.Msgs {
-		s.msg(msg.Client, msg.Msg, file)
+		s.msg(msg.Client, msg.Msg)
 	}
 }
 
-func (s *Server) msg(c *Client, msg string, file *os.File) {
+func (s *Server) msg(c *Client, msg string) {
 	msg = fmt.Sprintf("[%s][%s]: %s", time.Now().Format("2006-01-02 15:04:05"), c.Username, msg)
 	s.broadcast(c, msg)
-	_, err := file.Write([]byte(msg + "\n"))
-	ErrorsHandler(err, false)
+	c.SaveHistory(msg)
 }
 
 func (s *Server) broadcast(sender *Client, msg string) {
