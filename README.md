@@ -13,8 +13,8 @@ In order to run the project correctly, your terminal <ins>MUST</ins> be initiali
 ```bash
 $ git clone $url # $url = link to my project (github, gitea...)
 $ cd net-cat/
-$ make build
-$ ./TCPChat
+$ make # to build and run
+Build in progress...
 Listening on the port :8989
 $ ./TCPChat 2525
 Listening on the port :2525
@@ -23,6 +23,6 @@ $
 
 ### Author(s)
 
--
--
+- [Arnaud de Dreuzy](https://zone01normandie.org/git/adedreuz)
+- [Theo Vallois](https://zone01normandie.org/git/tvallois)
 - [Adam GONÇALVES](https://zone01normandie.org/git/agoncalv) (aka [Shasor#3755](https://discordapp.com/users/282816260075683841))

@@ -5,5 +5,4 @@ build:
 	@go build -o TCPChat ./cmd/main.go
 
 run:
-	@echo "Run:"
 	@./TCPChat
