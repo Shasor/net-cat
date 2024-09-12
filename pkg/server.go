@@ -10,15 +10,17 @@ import (
 )
 
 type Server struct {
-	Members map[net.Addr]*Client
-	Msgs    chan Msg
-	Mu      sync.Mutex
+	Members  map[net.Addr]*Client
+	Msgs     chan Msg
+	Commands chan Command
+	Mu       sync.Mutex
 }
 
 func NewServer() *Server {
 	return &Server{
-		Members: make(map[net.Addr]*Client),
-		Msgs:    make(chan Msg),
+		Members:  make(map[net.Addr]*Client),
+		Msgs:     make(chan Msg),
+		Commands: make(chan Command),
 	}
 }
 
@@ -34,6 +36,7 @@ func (s *Server) NewClient(conn net.Conn) {
 		Conn:     conn,
 		Username: "",
 		Msgs:     s.Msgs,
+		Commands: s.Commands,
 	}
 
 	c.Conn.Write([]byte(welcomeMsg))
@@ -73,6 +76,11 @@ func (s *Server) Run() {
 	s.Mu.Lock()
 	defer s.Mu.Unlock()
 	for msg := range s.Msgs {
+		go func() {
+			for cmd := range s.Commands {
+				// to finish
+			}
+		}()
 		s.msg(msg.Client, msg.Msg)
 	}
 }

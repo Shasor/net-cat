@@ -17,6 +17,7 @@ type Client struct {
 	Conn     net.Conn
 	Username string
 	Msgs     chan<- Msg
+	Commands chan<- Command
 }
 
 func (c *Client) readInput() {
@@ -29,7 +30,13 @@ func (c *Client) readInput() {
 
 		input = strings.TrimSpace(input)
 
-		if input != "" {
+		if strings.HasPrefix(input, "/name") {
+			c.Commands <- Command{
+
+				Client: c,
+				Args:   strings.Split(input, " ")[1:],
+			}
+		} else if input != "" {
 			c.Msgs <- Msg{
 				Client: c,
 				Msg:    input,
